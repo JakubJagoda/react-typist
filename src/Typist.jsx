@@ -21,6 +21,7 @@ export default class Typist extends Component {
     onLineTyped: PropTypes.func,
     onTypingDone: PropTypes.func,
     delayGenerator: PropTypes.func,
+    noShift: PropTypes.bool,
   }
 
   static defaultProps = {
@@ -33,6 +34,7 @@ export default class Typist extends Component {
     onLineTyped: () => {},
     onTypingDone: () => {},
     delayGenerator: utils.gaussianRnd,
+    noShift: false,
   }
 
   constructor(props) {
@@ -184,15 +186,17 @@ export default class Typist extends Component {
   render() {
     const { className, cursor } = this.props;
     const { isDone } = this.state;
-    const innerTree = utils.cloneElementWithSpecifiedText({
+    const { innerTree, rest } = utils.cloneElementWithSpecifiedText({
       element: this.props.children,
       textLines: this.state.textLines,
+      linesToType: this.linesToType,
     });
 
     return (
       <div className={`Typist ${className}`}>
         {innerTree}
         <Cursor isDone={isDone} {...cursor} />
+        {this.props.noShift && rest}
       </div>
     );
   }

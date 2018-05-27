@@ -111,10 +111,30 @@ function cloneElementWithSpecifiedTextAtIndex(element, textLines, textIdx) {
   return [textLines[idx], idx + 1];
 }
 
-export function cloneElementWithSpecifiedText({ element, textLines }) {
+export function cloneElementWithSpecifiedText({ element, textLines, linesToType }) {
   if (!element) {
     return undefined;
   }
 
-  return cloneElementWithSpecifiedTextAtIndex(element, textLines, 0)[0];
+  const renderedText = cloneElementWithSpecifiedTextAtIndex(element, textLines, 0)[0];
+
+  // @todo: Make it work with backspace element, delay element and other children elements
+  const currentLine = textLines.length - 1;
+  let restText;
+  if (currentLine < 0 || React.isValidElement(linesToType[currentLine])) {
+    restText = '';
+  } else {
+    restText = linesToType[currentLine].slice(textLines[currentLine].length);
+  }
+
+  const rest = React.createElement(
+    'span',
+    { style: { visibility: 'hidden' } },
+    restText
+  );
+
+  return {
+    innerTree: renderedText,
+    rest,
+  };
 }
